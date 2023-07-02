@@ -1,3 +1,7 @@
+# Disclaimer
+
+This guide is presented as is. Some of the instructions in this guide cover things such as resetting a drive's partition table which could lead to a loss of data. Anytime these are discussed please be very careful with how you proceed. I take no responsibilities for loss of data.
+
 # PersonalLinuxSetup
 
 This document is primarily designed as a failsafe to restore my Linux Desktop OS setup in case I ever reach an unrecovable state.
@@ -5,13 +9,12 @@ This document is primarily designed as a failsafe to restore my Linux Desktop OS
 ## System Specifications:
 ```
 CPU: Ryzen 9 5950X
-Motherboard: Gigabyte X570 Aorus Master
+Mobo: Gigabyte X570 Aorus Master
 RAM: 2 x 16GB Trident Z Neo DDR4-3600 @CL16
-GPU 1: Gigabyte Reference Radeon RX 6900 XT
-GPU 2: EVGA Geforge RTX 3070 XC3 (FHR)
-SSD (Windows): Sabrent Rocket NVMe4 1TB
-SSD (Linux): Crucial P5 NVMe3 1TB
-SSD (Shared): Crucial BX500 2.5" SATA III
+GPU: Gigabyte Reference Radeon RX 6900 XT
+SSD: (Windows): Sabrent Rocket NVMe4 1TB
+SSD: (Linux): Crucial P5 NVMe3 1TB
+SSD: (Shared): Crucial BX500 2.5" SATA III
 PSU: Corsair RM1000x 80+ Gold
 ```
 
@@ -49,7 +52,7 @@ Use diskpart to check if Windows is installed under a GPT disk or an MBR disk. T
 ```
 diskpart
 ```
-Once diskpart has loaded, simply type:
+Once `diskpart` has loaded, simply type:
 ```
 list disk
 ```
@@ -66,9 +69,9 @@ DISKPART> list disk
   --------  -------------  -------  -------  ---  ---
   Disk 0    Online          931 GB  1024 KB        *
 ```
-If your primary boot disk has a * under Gpt, then Windows is already installed under UEFI boot.
+If your primary boot disk has a `*` under `Gpt`, then Windows is already installed under UEFI boot.
 
-If there is not a * under Gpt for your primary boot disk, then Windows is running under legacy (MBR) boot. You can convert it using the Windows tool [MBR2GPT](https://docs.microsoft.com/en-us/windows/deployment/mbr-to-gpt).
+If there is not a `*` under `Gpt` for your primary boot disk, then Windows is running under legacy (MBR) boot. You can convert it using the Windows tool [MBR2GPT](https://docs.microsoft.com/en-us/windows/deployment/mbr-to-gpt).
 
 #### Force UTC
 
@@ -88,9 +91,9 @@ Then navigate to:
 ```
 HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\TimeZoneInformation
 ```
-Right click the directory "TimeZoneInformation", go to "New", and select "DWORD (32-Bit) Value".
+Right click the directory `TimeZoneInformation`, go to `New`, and select `DWORD (32-Bit) Value`.
 
-Name the value "RealTimeIsUniversal", set the value to 1, and ensure the base is set to Hexadecimal.
+Name the value `RealTimeIsUniversal`, set the value to `1`, and ensure the base is set to `Hexadecimal`.
 
 #### Disable Fast Startup
 
@@ -103,220 +106,112 @@ This can be avoided by opening Command Prompt/Powershell as admin (Shift right c
 powercfg -h off
 ```
 
-## Install Ubuntu
+## Prepare the Linux Drive
 
-This document is assuming that the Linux host OS will be running some variant of Ubuntu 20.04 LTS. At time of writing, current standard is 20.04.4 LTS.
+Ideally, the specified drive should be in an un-initialized state. This can be done using either Windows or Linux.
 
-My current recommendation is [Kubuntu](https://kubuntu.org/) due to my preference of KDE Plasma instead of Gnome.
+#### NOTE:
 
-Follow the standard installation process to your prefences. If you decide to dual boot you may need to change a few settings.]
+Be very careful selecting which drive to wipe. These commands are destructive and if you select the wrong drive you could lose some or all of your data.
 
-It is recommended to install 3rd party drivers.
+#### Windows (Diskpark)
 
-## Update and Utilities
+First, open `Disk Management` (Either Shift+Right Click on the start menu or open the start menu and search for Disk Management) to locate the specific drive you want to install Linux on. Once you have the drive number, run (Win+R):
+```
+diskpark
+```
+This will open a command line utility where you can then list your disks:
+```
+list disk
+```
+You should receive a result that looks something like:
+```
+Microsoft DiskPart version 10.0.19041.964
 
-Run update and upgrade.
-```
-sudo apt update
-```
-```
-sudo apt upgrade
-```
+Copyright (C) Microsoft Corporation.
+On computer: BD-VW-001
 
-#### Install Browser
+DISKPART> list disk
 
-You can install most browsers through the Discover app fairly easily. My current preference is Edge, which does require a bit more legwork.
+  Disk ###  Status         Size     Free     Dyn  Gpt
+  --------  -------------  -------  -------  ---  ---
+  Disk 0    Online          931 GB  0 B            *
+  Disk 1    Online          447 GB  0 B            *
+  Disk 2    Online         1863 GB  0 B            *
+  Disk 3    Online          117 GB  0 B            
+```
+In our case, we want `Disk 1', so we will select it:
+```
+select disk 1
+```
+Once the disk is selected, we can reset it:
+```
+clean
+```
+The drive is now reset and can be used to install Linux.
 
-Download and save the .deb package from Microsoft's [Evergreen](https://www.microsoft.com/en-us/edge?r=1#evergreen) branch.
+#### Linux (wipefs)
 
-Navigate to your downloads folder and run the .deb package with package manager.
+Ensure that you have the 'wipefs' package installed. This is included in most base distrobution packages (`core` for Arch Linux).
 
-Run updates:
+Identify the drive you wish to wipe.
 ```
-sudo apt update
+sudo fdisk -l
 ```
-If an error is received about an unsigned key, review the link [here](https://askubuntu.com/questions/13065/how-do-i-fix-the-gpg-error-no-pubkey) to add the key.
+In our case, the device is named `/dev/sdb`. Linux stores device data under the `/dev` directory where files and folders reference to the actual devices. `sd` stands for "Sata Device" while the last character `b` denotes drive b (This is not a drive letter). Partitions will appear like `/dev/sdb1`, where `sdb` idtenified the volume, and `1` identifies the partition.
 
-Open "Default Applications" and set Edge to the default browser.
+Now that we know the device name we can reset it with wipefs:
+```
+sudo wipefs -a /dev/sdb
+```
+This will wipe all the device IDs used by an MBR or GPT volume.
 
-#### Install OpenSSH Server
+##### Note:
 
-I like to be able to SSH into my system to troubleshoot issues with virtualization. This is especially helpful when trying to perform single GPU passthrough.
+If you run `wipefs` from the live installation environment it is advised to restart before continuing to the installion.
 
-I accomplish this with [OpenSSH](https://www.openssh.com/) Server.
-```
-sudo apt install openssh-server
-sudo systemctl enable ssh
-sudo systemctl start ssh
-```
+## Install Arch
 
-#### Install NeoFetch
+#### Create the Installation Media
 
-Because every Linux user needs to take pictures of their desktop with [NeoFetch](https://github.com/dylanaraps/neofetch) running.
-```
-sudo apt install neofetch
-```
+You can find a .iso file for Arch Linx on their [downloads](https://archlinux.org/download/) page.
 
-#### Install bpytop
+I normally just grab the file from their `pkgbuild.com` mirror. It should be just after `Checksums` listed under `Worldwide`. Once on the Index page you will want to grab the first file ending in `-x86_64.iso`.
 
-My preferred top alternative is [bpytop](https://github.com/aristocratos/bpytop)
-```
-sudo snap install bpytop
-```
+Use an application such as [Rufus](https://rufus.ie/en/) (Windows), [Etcher](https://etcher.balena.io/) (Windows & Linux), or [Ventoy](https://www.ventoy.net/en/index.html) to write the .iso to a USB drive and use your boot menu (Check your motherboard documentation) to boot into the live installation environement.
 
-#### Install tmux
+#### Setup the Drive
 
-I consider [tmux](https://github.com/tmux/tmux/wiki) mandatory, not just for command line multiplexing but also the ability to run a terminal shell in the background and be able to re-open it via SSH.
-```
-sudo apt install tmux
-```
+We are going to use `fdisk` for partition the drives and get them ready for formatting.
 
-#### Install Discord
+First, find the drive you are installing to:
+```
+fdisk -l
+```
+In our case, we will be installing to `/dev/sdb`. Please remember the identifier for the drive you will be using. NVMe drives may appear as `/dev/nvme0n1`.
 
-My general go-to chat platform is [Discord](https://discord.com/).
+Use `fdisk` to select the drive for partitioning.
 ```
-sudo snap install discord
+fdisk /dev/
 ```
+This will enter the `fdisk` utility on the targeted drive. We can now tell it to create a GPU (UEFI) partition table.
+```
+g
+```
+We now want to create a new partition.
+```
+n
+```
+It should now ask for the partition number. You can leave this blank and hit `enter` to default to `1`.
 
-#### Install Git
+Next it will ask about the starting block. Once again, you can leave this empty and hit `enter` to use the first available block.
 
-Not really much to say here. [Git](https://git-scm.com/) is all but mandatory for things like kernal compilation and software version control.
+Now we want to specify the last block of the partition. This is supposed to be the EFI partition where your bootloader will sit, so it does not need to be very large. We're going to give it a size of 500 Megabytes.
 ```
-sudo apt install git
++500M
 ```
-
-#### Install Tree
-
-[Tree](http://mama.indstate.edu/users/ice/tree/) is a useful application for quickly visualizing a file tree within a terminal session.
-
-## Install OpenRGB
-
-My system utilizes RAM and motherboard RGB components that I can't apply hardware profiles to inside of Windows. To gain control of these components I like to utlize [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB).
-
-#### Install Build Dependencies
-
-I found the following dependencies necessary while compiling and setting up OpenRGB.
+Now that the partition is created and you are back in the `fdisk` utility we want to convert the file type to an EFI system partition. Type in:
 ```
-sudo apt install git build-essential qtcreator qt5-default libusb-1.0-0-dev libhidapi-dev pkgconf libmbedtls-dev
+t
 ```
-
-#### Clone From Source
-
-Now that we have our dependencies we will want to clone the source repo.
-```
-git clone https://gitlab.com/CalcProgrammer1/OpenRGB
-```
-Navigate into the new directory.
-```
-cd OpenRGB
-```
-Run qmake.
-```
-qmake OpenRGB.pro
-```
-Run make (Replace 32 with number of CPU threads).
-```
-make -j32
-```
-Update the path for a terminal shortcut.
-```
-sudo ln -s ~/OpenRGB/openrgb /usr/local/bin/openrgb
-```
-
-## Patch Kernel for OpenRGB
-
-OpenRGB requires a customized Kernel with L2C bus control enabled in order to access DRAM RGB configurations. Full instructions can be found [here](https://gitlab.com/CalcProgrammer1/OpenRGB/-/wikis/OpenRGB-Kernel-Patch).
-
-#### Install Build Dependencies
-
-Before taking any further steps ensure that you have returned to your home directory in Terminal.
-```
-cd ~/
-```
-I found the following dependencies necessary when attempting to compile the modified kernel.
-```
-sudo apt install flex bison libssl-dev libc6-dev libncurses-dev libelf-dev
-```
-
-#### Clone and Patch Kernel
-
-We now want to clone the source [Linux](https://github.com/torvalds/linux) kernel tree.
-```
-git clone https://github.com/torvalds/linux
-```
-Navigate into the new directory.
-```
-cd linux
-```
-Checkout a valid version. I found the best results using 5.11 for AMDGPU compatibility.
-```
-git checkout v5.11
-```
-Apply the patch from OpenRGB.
-```
-patch -p1 < ~/OpenRGB/OpenRGB.patch
-```
-Copy the existing configuration file. This may differ depending on when you installed Kubuntu.
-```
-cp /boot/config-5.11.0-44-generic .config
-```
-Verify signing keys to prevent certificate error and disable Info BTF.
-```
-nano .config
-```
-Press Ctrl+W to search for "CONFIG_MODULE_SIG_KEY" or "CONFIG_SYSTEM_TRUSTED_KEYS". Comment out (Add "# " before) the lines for "CONFIG_MODULE_SIG_KEY" and "CONFIG_SYSTEM_TRUSTED_KEYS".
-
-Press Ctrl+W to search for "CONFIG_DEBUG_INFO_BTF". Use arrow keys to navigate to the value and if set to "y", change to "n".
-
-Make oldconfig. May prompt for new config settings. Just hold enter until complete.
-```
-make oldconfig
-```
-Configure menuconfig.
-```
-make menuconfig
-```
-Navigate to Device Drivers > I2C Support > I2C Hardware Bus Support > Nuvoton NCT6775 and compatible SMBus controller. Once highlited hit "Y" to mark as a build module.
-
-Exit and save configuration.
-
-#### Build .deb Packages
-
-Run make (Replace 32 with number of CPU threads).
-```
-make -j32
-```
-You may have to hit enter a few times at the start to apply default settings for "CONFIG_MODULE_SIG_KEY" and "CONFIG_SYSTEM_TRUSTED_KEYS".
-
-#### Install .deb Packages
-
-First navigate back to your home directory.
-```
-cd ..
-```
-Run dpkg.
-```
-sudo dpkg -i *5.11.0+-1_amd64.deb
-```
-
-#### Verify
-
-Reboot the system.
-```
-sudo reboot
-```
-After the reboot run uname to verify current kernel.
-```
-uname -a
-```
-You should see "5.11.0+"
-```
-Linux bd-dl-001 5.11.0+
-```
-If the new Kernel is not running, us GRUB to manually select the new Kernel under "Advanced Options for Ubuntu".
-
-Should GRUB not automatically prompt you by default, press ESC (If UEFI boot) to force GRUB to launch. This may take some trial and error to get used to the timing as it needs to be after UEFI initialization but before Linux has been booted.
-
-## Grant SMBuss Access
-
-TBC. . .
+Since there is only 1 partition currently on the drive, the `t` command used to change the partition type will select the first partition.
