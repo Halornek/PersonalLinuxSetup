@@ -23,37 +23,21 @@ SSD: (Install Drive): Crucial MX500 2.5" SATA III
 PSU: Corsair RM1000x 80+ Gold
 ```
 
-## Pre-Installation - UEFI
-
-A couple settings need to be changed within the system UEFI firmware.
-
-### Enable CPU Virtualization
-
-Boot into your systems UEFI and search for the CPU virtualization flag. This varies depending on vendor, but can typically be found in some kind of advanced settings menu.
-
-### Enable IOMMU
-
-IOMMU (Input-Output Memory Management Unit) will be required during later steps to properly isolate and passthrough system components.
-
-This feature is also typically found under some kind of advanced settings menu.
-
-### Disable Secure Boot
-
-Secure boot can cause some issues with booting the guest Operating system and properly passing through physical components via the hypervisor.
-
-This feature is typically found under the boot menu.
-
-### Disable Legacy Boot
-
-Legacy (BIOS) boot can also cause a large deal of issues with passing through graphics cards in particular.
-
 ## Configure Winders
 
-This section is only necessary if Windows is already installed and the goal is to convert it to a guest OS. Please note that this method can cause issues with licensing as Windows will not see the guest OS as running on the same hardware.
+This section is only necessary if Windows is already installed and the goal is to convert it to a guest OS or dual boot. Please note that using Windows as a guest OS can cause issues with licensing as Windows will not see the guest OS as running on the same hardware.
 
 ### Ensure UEFI Boot
 
-Use diskpart to check if Windows is installed under a GPT disk or an MBR disk. The easiest way to do this is to press Windows+R and run:
+Modern computers have two different booth methods. The older method is often referred to as BIOS or "Legacy" boot. Legacy boot uses boot drives set up as MBR ("Master Boot Record"). MBR has a number of issues such as limiting the total usable size of a drive to 2.2TBs and not properly support encryption. Legacy boot can also cause some issues with passing through things like graphics cards to a VM.
+
+The newer method is often referred to as UEFI (Unified Estensible Firmware Interface). Nearly all modern computers will use a UEFI boot with the operating system installed on a GPT (GUID (Globaly Unique Identifiers) Partition Table) drive. UEFI boot and GPT drives offer additional features and security. These should be used whenever possible.
+
+If you are dual booting, it is very important that both Windows and Linux are using the same boot method. Since this guide is only written with UEFI in mind (It is possible to install Arch Linux under Legacy Boot, but I am not covering this as a majority of modern systems should be using UEFI) we will need to ensure that Windows is already running with UEFI boot before we disable the legacy boot method in the system firmware at a later step.
+
+Most of the time newer Windows installs will use a UEFI boot method on a GPT (GUID (Globaly Unique Identifiers) Partition Table) drive. Since we are disabling legacy boot methods we need to ensure Windows is not installed on an MBR drive, which would be using a Legacy Boot method.
+
+To start, use diskpart to check if Windows is installed under a GPT disk or an MBR disk. The easiest way to do this is to press Windows+R and run:
 ```
 diskpart
 ```
@@ -111,9 +95,27 @@ This can be avoided by opening Command Prompt/Powershell as admin (Shift right c
 powercfg -h off
 ```
 
+## Pre-Installation - UEFI
+
+A couple settings need to be changed within the system UEFI firmware (Sometimes called the "BIOS").
+
+### Disable Secure Boot
+
+Secure boot can cause some issues with booting some Linux operating systems and allowing `grub` (The Linux Bootloader we will be using) to hand off the boot process to Windows in a dual boot environment. Secure boot offers very little actual security and is more of a tool for Microsoft to only allow "approved" operating systems to boot.
+
+This feature is typically found under the boot menu.
+
+### Disable Legacy Boot
+
+Since we ensured/converted Windows to UEFI we can go ahead and disable legacy boot methods.
+
+This feature is typically found under the boot menu.
+
 ## Prepare the Linux Drive
 
 Ideally, the specified drive should be in an un-initialized state. This can be done using either Windows or Linux.
+
+Only use one of the below methods to prepare the drive. If the drive is already in an uninitialized state (Recently purchased new) then you can skip this part. To clarify, this is not the same as formatting/partitioning the drive for use by Linux. This step is to remove the partition tables so that the setup process will be easier later.
 
 ### Important Note
 
@@ -163,7 +165,7 @@ Identify the drive you wish to wipe.
 ```
 sudo fdisk -l
 ```
-In our case, the device is named `/dev/sdb`. Linux stores device data under the `/dev` directory where files and folders reference to the actual devices. `sd` stands for "Sata Device" while the last character `b` denotes drive b (This is not a drive letter). Partitions will appear like `/dev/sdb1`, where `sdb` idtenified the volume, and `1` identifies the partition.
+In our case, the device is named `/dev/sdb`. Linux stores device data under the `/dev` directory where files and folders reference to the actual devices. `sd` stands for "Sata Device" while the last character `b` denotes drive b (This is not a drive letter). Partitions will appear like `/dev/sdb1`, where `sdb` idtenified the drive, and `1` identifies the partition.
 
 Now that we know the device name we can reset it with wipefs:
 ```
