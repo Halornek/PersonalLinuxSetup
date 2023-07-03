@@ -376,12 +376,13 @@ To verify that everything looks correct, we are going to use `cat` to read the f
 cat /mnt/etc/fstab
 ```
 This should print out a result similar to below:
+```
 # /dev/mapper/vga-lv_root
 UUID=be8a58df-1ea1-47a9-8443-e0c2e62b4fdf       /               ext4            rw,relatime     0 1
 
 # /dev/mapper/vga-lv_home
 UUID=c11e490e-5f75-4fa1-9883-2b1a8947ee01       /home           ext4            rw,relatime     0 2
-
+```
 The actual UUIDs do not matter. These should be unique to your system. What should matter is that the `lv_root` partition is mounted under `/` with the permissions of `0` `1`, while the `lv_home` partition is mounted under `/home` with the permissions of `0` `2`. It isn't important to understand everything else in this file at this time.
 
 ### Starting the Install
