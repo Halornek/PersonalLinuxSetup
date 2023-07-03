@@ -6,7 +6,7 @@ This document is primarily designed as a failsafe to restore my Linux Desktop OS
 
 This guide is presented as is. Some of the instructions in this guide cover things such as resetting a drive's partition table which could lead to a loss of data. Anytime these are discussed please be very careful with how you proceed. I take no responsibilities for loss of data.
 
-## System Specifications:
+## System Specifications
 ```
 CPU: Ryzen 9 5950X
 Mobo: Gigabyte X570 Aorus Master
@@ -110,7 +110,7 @@ powercfg -h off
 
 Ideally, the specified drive should be in an un-initialized state. This can be done using either Windows or Linux.
 
-### NOTE:
+### Important Note
 
 Be very careful selecting which drive to wipe. These commands are destructive and if you select the wrong drive you could lose some or all of your data.
 
@@ -166,7 +166,7 @@ sudo wipefs -a /dev/sdb
 ```
 This will wipe all the device IDs used by an MBR or GPT volume.
 
-#### Note:
+#### Important Note
 
 If you run `wipefs` from the live installation environment it is advised to restart before continuing to the installion.
 
