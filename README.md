@@ -10,7 +10,7 @@ This guide is presented as is. Some of the instructions in this guide cover thin
 
 ## System Specifications
 
-Keep in mind that this guide was written with the following specifications in mind.
+Keep in mind that this guide was written with the following specifications as a base. You will at least want to know what type of drives you have in your system along with your memory capacity, CPU, and GPU.
 ```
 CPU: Ryzen 9 5950X
 Mobo: Gigabyte X570 Aorus Master
