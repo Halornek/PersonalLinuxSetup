@@ -1,6 +1,8 @@
 # Arch Install Instructions
 
-This document is primarily designed as a failsafe to restore my Linux Desktop OS setup in case I ever reach an unrecovable state.
+## Target Audience
+
+While this document is primarily designed as a failsafe to restore my Linux Desktop OS setup in case I ever reach an unrecovable state, the general target audience would be the entry/mid-tier Windows Power User. The "family tech support" that used to be able to do everything since they could easily navigate and configure Windows via GUI applications such as Control Panel and may be frustrated that Microsoft is slowly taking away these things and regulating them to more advanced utilities such as `gpedit` and `regedit`.
 
 ## Disclaimer
 
