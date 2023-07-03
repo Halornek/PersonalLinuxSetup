@@ -1,4 +1,4 @@
-# PersonalLinuxSetup
+# Arch Install Instructions
 
 This document is primarily designed as a failsafe to restore my Linux Desktop OS setup in case I ever reach an unrecovable state.
 
