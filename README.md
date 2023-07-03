@@ -22,17 +22,17 @@ PSU: Corsair RM1000x 80+ Gold
 
 A couple settings need to be changed within the system UEFI firmware.
 
-#### Enable CPU Virtualization
+### Enable CPU Virtualization
 
 Boot into your systems UEFI and search for the CPU virtualization flag. This varies depending on vendor, but can typically be found in some kind of advanced settings menu.
 
-#### Enable IOMMU
+### Enable IOMMU
 
 IOMMU (Input-Output Memory Management Unit) will be required during later steps to properly isolate and passthrough system components.
 
 This feature is also typically found under some kind of advanced settings menu.
 
-#### Disable Secure Boot
+### Disable Secure Boot
 
 Secure boot can cause some issues with booting the guest Operating system and properly passing through physical components via the hypervisor.
 
