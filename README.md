@@ -7,6 +7,8 @@ This document is primarily designed as a failsafe to restore my Linux Desktop OS
 This guide is presented as is. Some of the instructions in this guide cover things such as resetting a drive's partition table which could lead to a loss of data. Anytime these are discussed please be very careful with how you proceed. I take no responsibilities for loss of data.
 
 ## System Specifications
+
+Keep in mind that this guide was written with the following specifications in mind.
 ```
 CPU: Ryzen 9 5950X
 Mobo: Gigabyte X570 Aorus Master
@@ -115,11 +117,11 @@ Ideally, the specified drive should be in an un-initialized state. This can be d
 
 Be very careful selecting which drive to wipe. These commands are destructive and if you select the wrong drive you could lose some or all of your data.
 
-### Windows (Diskpark)
+### Windows (Diskpart)
 
 First, open `Disk Management` (Either Shift+Right Click on the start menu or open the start menu and search for Disk Management) to locate the specific drive you want to install Linux on. Once you have the drive number, run (Win+R):
 ```
-diskpark
+diskpart
 ```
 This will open a command line utility where you can then list your disks:
 ```
