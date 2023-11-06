@@ -497,7 +497,10 @@ You will want to locate your specific locale in this list. In my case, I'm a US 
 ```
 en_US.UTF-8 UTF-8
 ```
-We can now exit `nano` with `Ctrl+X`, `y`, then hitting `enter`.
+We can now exit `nano` with `Ctrl+X`, `y`, then hitting `enter`. Finally, we need to generate the locales.
+```
+locale-gen
+```
 
 #### Configure Users
 
