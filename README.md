@@ -663,6 +663,10 @@ If everything looks correct we can test the file by running:
 ```
 mount -a
 ```
+Next we want to enable swap.
+```
+swapon -a
+```
 We can check if the swapfile is working by running:
 ```
 free -m
