@@ -299,9 +299,9 @@ We are targeting partition `2` since that is what we partitioned under LVM earli
 
 Now that we have a physical volume ready, we need to create a volume group on that physical volume. A volume group is a container for the logical volumes (virtual partitions) we will be using later. To do so:
 ```
-vgcreate vga1 /dev/sdb2
+vgcreate vga /dev/sdb2
 ```
-We are now create the volumegroup `vga1`. This can be named whatever you want, I just use `vga` to keep things similar to a device such as `/dev/sdb`, with `sd` being "Sata Disk" and `b` being the disk identifier. In this case, `vg` stands for "Volume Group" and the `a` is the identifier I use for the first volume group. This is how I personally decide to set things up, but can use just about any name, so long as it's not part of a naming format such as `sda` or `nvme0n1`.
+We are now create the volumegroup `vga`. This can be named whatever you want, I just use `vga` to keep things similar to a device such as `/dev/sdb`, with `sd` being "Sata Disk" and `b` being the disk identifier. In this case, `vg` stands for "Volume Group" and the `a` is the identifier I use for the first volume group. This is how I personally decide to set things up, but can use just about any name, so long as it's not part of a naming format such as `sda` or `nvme0n1`.
 
 ###### Logical Volumes
 
@@ -370,7 +370,11 @@ Don't worry about the fact that everything is under `/mnt`. This will all be cle
 
 Now that we have the drives mounted we want to create the `fstab` file (This file is normally located at `/etc/fstab`). This file is what Linux uses to know what partitions to mount and where to place them in the filesystem.
 
-This can be done using the `genfstab` command:
+First, we need to create the `/etc` directory.
+```
+mkdir /mnt/etc
+```
+Next we can generate the `fstab` file using the `genfstab` command:
 ```
 genfstab -U -p /mnt >> /mnt/etc/fstab
 ```
@@ -613,7 +617,7 @@ sudo su
 
 The swapfile (pagefile in Windows) is a file used to store data from RAM when your memory is getting close to full. This allows your system to free up RAM space as necessary by moving stale data to the storage drive. First, we will create the file using the `dd` utility.
 ```
-dd if=/dev/zero of /swapfile bs=1M count=32768 status=progress
+dd if=/dev/zero of=/swapfile bs=1M count=32768 status=progress
 ```
 `if` is the "input file", or where `dd` is copying information from. In this case we told `dd` to use just a bunch of zeroes as the input file.
 `of` is the "output file", or where `dd` is copying information to. In this case, it's a file named `/swapfile`.
@@ -803,11 +807,11 @@ su
 
 Finally we are going to install our graphical environement. We have a lot of options for desktop environements and window managers within Linux, but for simplicity we're just going to go with KDE Plasma, a highly customizable and out of the box functional desktop environement that should be familiar enough to Windows users.
 ```
-pacman -S plasma-meta kde-applications packagekit-qt5
+pacman -S plasma-meta kde-applications packagekit-qt6
 ```
 `plasma-meta` is the package group for the KDE Plasma desktop.
 `kde-applications` are basic programs and utilities for KDE Plasma.
-`packagekit-qt5` is required for Plasma's `discover` app store to use `pacman` to install and update packages.
+`packagekit-qt6` is required for Plasma's `discover` app store to use `pacman` to install and update packages.
 
 We also want to enable the login manager for KDE Plasma, `sddm`:
 ```
