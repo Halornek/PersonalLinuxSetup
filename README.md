@@ -447,13 +447,14 @@ systemctl enable sshd
 
 Additionally, we want to install some networking tools.
 ```
-pacman -S networkmanager wpa_supplicant wireless_tools netctl dialog
+pacman -S networkmanager wpa_supplicant wireless_tools netctl dialog iwd
 ```
 `networkmanager` is the standard for controlling your network from the terminal.
 `wpa_supplicant` adds support for WPA, WPA2, and WPA3 wireless networks.
 `wireless_tools` allows a WiFi driver to expose it's functionality to userspace (Non-System) applications.
 `netctl` is a CLI (Command Line Interface) frontend for `networkmanager`.
 `dialog` is an application used by other programs to present dialog boxes within the terminal.
+`iwd` is a terminal application used to connect to WiFi networks.
 
 Additionally, we also want to make sure `networkmanager` is enabled:
 ```
