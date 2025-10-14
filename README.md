@@ -643,7 +643,7 @@ cp /etc/fstab /etc/fstab.bak
 ```
 Now we can add the proper line using a combination of `echo` and `tee`:
 ```
-echo '/swapfile none swap sw 0 0` | tee -a /etc/fstab
+echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab
 ```
 `echo` prints the specified text, in this case the line `/swapfile none swap sw 0 0`.
 `|` is known as the "pipe" character. It can take the output from the left command (`/swapfile none swap sw 0 0`) and "pipe" it into the right command.
@@ -759,10 +759,14 @@ pacman -S amd-ucode
 
 ##### Xorg
 
-Next we want to install the `xorg` display server. `xorg` allows us to display a graphical environment. Do note that `wayland`, an upcoming display protocol is looking to replace `xorg`, but still does have some teething issues and may not function well depending on your graphics driver/display environement. If you are using an AMD GPU and either KDE Plasma or Gnome I would recommend looking into `wayland` at a later time.
+Next we want to install the `xorg` display server. `xorg` allows us to display a graphical environment. Do note that `wayland`, an upcoming display protocol is looking to replace `xorg`, but still does have some teething issues and may not function well depending on your graphics driver/display environement. If you are using an AMD GPU and either KDE Plasma or Gnome I would recommend looking into `wayland` at a later time (Old information, disregard).
 ```
 pacman -S xorg-server
 ```
+
+##### Wayland
+
+Nothing special is required to use Wayland. It will be the default with KDE Plasma.
 
 ##### Graphics Drivers
 
@@ -812,7 +816,7 @@ pacman -S plasma-meta kde-applications packagekit-qt6
 ```
 `plasma-meta` is the package group for the KDE Plasma desktop.
 `kde-applications` are basic programs and utilities for KDE Plasma.
-`packagekit-qt6` is required for Plasma's `discover` app store to use `pacman` to install and update packages.
+`packagekit-qt6` is required for Plasma's `discover` app store to use `pacman` to install and update packages (Disregard, it is not recommended to use `discover` to update Arch packages).
 
 We also want to enable the login manager for KDE Plasma, `sddm`:
 ```
