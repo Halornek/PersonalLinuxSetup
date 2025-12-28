@@ -398,6 +398,12 @@ The actual UUIDs do not matter. These should be unique to your system. What shou
 
 ### Starting the Install
 
+Before installing the `base` package below, what appears to be a recent change in the setup process requires `/etc/vconsole.conf` to be created first. This can be done using `touch`.
+```
+touch /mnt/etc/vconsole.conf
+```
+Touch simply creates an empty file if it does not exist.
+
 Now that our drives are in place we can start installing everything necessary to boot our Arch Linux system.
 
 To start with we are going to explain Arch's primary package manager, `pacman` (Litterally "Package Manager"). `pacman` is a simple package manager that accepts basic options and a list of package names to perform actions. We will go further in depth later, because first we need to install `pacman` to our in-progress installation. This is done by installing the `base` package using `pacstrap`:
